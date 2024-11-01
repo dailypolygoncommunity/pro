@@ -1,0 +1,79 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-image: url('/images/background.png'); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  min-height: 100vh; /* Ensures the background covers the whole viewport */
+}
+
+.container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7); /* Dark background with transparency */
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-family: 'Courier New', Courier, monospace; /* Sets font to Courier New */
+  color: gray; /* Sets text color to gray */
+}
+
+h2 {
+  font-size: 1em; /* Set to 50% of the current size */
+  color: #d1d1d1;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.button-group button {
+  margin-right: 10px; /* Add space between buttons */
+}
+
+.button-group button:last-child {
+  margin-right: 0; /* Remove margin from the last button */
+}
+
+.input-field {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #4b4646;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.investment-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px; /* Adjust the gap between Invest and Withdraw buttons */
+  margin: 10px 0;
+}
+
+button {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  flex: 1; /* Make buttons fill the available space */
+}
+
+button:hover {
+  background-color: #24c615;
+}
+
+.connect-button {
+  background-color: #007bff;
+}
