@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   font-family: Arial, sans-serif;
-  background-image: url('.css/images/background.png'); /* Replace with your image path */
+  background-image: url('./images/background.png'); /* Replace with your image path */
   background-size: cover;
   background-position: center;
   padding: 20px;
