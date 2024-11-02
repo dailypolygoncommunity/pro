@@ -12,7 +12,7 @@ function InvestmentPlanCalculator() {
     const days = parseInt(investmentDays);
 
     if (isNaN(amount) || isNaN(days) || amount <= 0 || days <= 0) {
-      alert("Please enter valid investment amount and number of days.");
+      alert("Please enter a valid investment amount and number of days.");
       return;
     }
 
@@ -53,6 +53,19 @@ function InvestmentPlanCalculator() {
   );
 }
 
+function Modal({ show, onClose, message }) {
+  if (!show) return null;
+  
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <p>{message}</p>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [account, setAccount] = useState(null);
   const [contract, setContract] = useState(null);
@@ -61,6 +74,8 @@ function App() {
   const [referrer, setReferrer] = useState('');
   const [hasInvested, setHasInvested] = useState(false);
   const [previousReferrer, setPreviousReferrer] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const smartContractOwnWalletAddress = "0x8A7C94E02F7B8c381693314d797568692cd1cBD6";
 
@@ -87,10 +102,9 @@ function App() {
 
     const fetchReferrerFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
-      const referrerParam = params.get('ref'); // Fetching ref parameter
+      const referrerParam = params.get('ref');
       if (referrerParam) {
         setReferrer(referrerParam);
-        console.log("Referrer from URL:", referrerParam); // Log the referrer
       }
     };
 
@@ -102,7 +116,6 @@ function App() {
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       setAccount(accounts[0]);
-      console.log("Connected account:", accounts[0]);
     } catch (error) {
       console.error("Failed to connect wallet:", error);
     }
@@ -112,8 +125,8 @@ function App() {
     setAccount(null);
     setBonus(0);
     setHasInvested(false);
-    setPreviousReferrer(''); 
-    setReferrer(''); // Clear the referrer when disconnecting
+    setPreviousReferrer('');
+    setReferrer('');
     console.log("Wallet disconnected.");
   };
 
@@ -125,7 +138,6 @@ function App() {
     try {
       const totalBonus = await contract.methods.getUserAvailable(account).call();
       setBonus(Web3.utils.fromWei(totalBonus, 'ether'));
-      console.log("Total bonus:", totalBonus);
     } catch (error) {
       console.error("Failed to retrieve bonus:", error);
     }
@@ -134,56 +146,57 @@ function App() {
   const handleMakeInvestment = async (event) => {
     event.preventDefault();
     if (!account || !contract) {
-      console.error("Wallet not connected or contract not initialized");
+      setModalMessage("Wallet not connected or contract not initialized");
+      setShowModal(true);
       return;
     }
     if (!amount || parseFloat(amount) <= 0) {
-      console.error("Invalid investment amount");
+      setModalMessage("Invalid investment amount");
+      setShowModal(true);
       return;
     }
 
-    let referrerAddress;
-    if (hasInvested) {
-      referrerAddress = previousReferrer; // Use the previous referrer for subsequent investments
-    } else {
-      referrerAddress = referrer || smartContractOwnWalletAddress; // Use form input or default on first investment
-      setPreviousReferrer(referrerAddress); // Save referrer for future reference
-      setHasInvested(true); // Mark as having invested
+    let referrerAddress = hasInvested ? previousReferrer : (referrer || smartContractOwnWalletAddress);
+    if (!hasInvested) {
+      setPreviousReferrer(referrerAddress);
+      setHasInvested(true);
     }
 
-    console.log(`Making investment of ${amount} POL with referrer ${referrerAddress}`);
     try {
-      const transactionHash = await contract.methods.invest(referrerAddress).send({
+      await contract.methods.invest(referrerAddress).send({
         from: account,
         value: Web3.utils.toWei(amount, 'ether'),
       });
-      console.log("Investment successful, transaction hash:", transactionHash);
+      setModalMessage("Investment successful!");
     } catch (error) {
-      console.error("Investment failed:", error);
+      setModalMessage("Investment failed: " + error.message);
     }
+    setShowModal(true);
   };
 
   const handleWithdraw = async () => {
     if (!account || !contract) {
-      console.error("Wallet not connected or contract not initialized");
+      setModalMessage("Wallet not connected or contract not initialized");
+      setShowModal(true);
       return;
     }
     try {
-      const transactionHash = await contract.methods.withdraw().send({
-        from: account,
-      });
-      console.log("Withdrawal successful, transaction hash:", transactionHash);
+      await contract.methods.withdraw().send({ from: account });
+      setModalMessage("Withdrawal successful!");
     } catch (error) {
-      console.error("Withdrawal failed:", error);
+      setModalMessage("Withdrawal failed: " + error.message);
     }
+    setShowModal(true);
   };
+
+  const closeModal = () => setShowModal(false);
 
   return (
     <div className="App">
       <div style={{ backgroundColor: '', padding: '20px' }}>
-        <h1>Daily Polygon Community</h1>
-        <h2>"Building a Brighter Future Through Collective Giving"</h2>
-      </div>
+  <h1 className="app-title">Daily Polygon Community</h1>
+  <h2 className="app-subtitle">"Building a Brighter Future Through Collective Giving"</h2>
+    </div>
       <div className="container">
         {account ? (
           <div className="dashboard">
@@ -194,7 +207,6 @@ function App() {
               <button onClick={handleGetBonus} className="bonus-button">Check Your Available Grant</button>
             </div>
             <form onSubmit={handleMakeInvestment} className="investment-form">
-              {/* Referrer input displayed only for first-time investors */}
               {!hasInvested ? (
                 <input
                   type="text"
@@ -207,9 +219,9 @@ function App() {
                 <input
                   type="text"
                   placeholder="Referrer Address"
-                  value={previousReferrer} // Display the previous referrer
+                  value={previousReferrer}
                   className="input-field"
-                  disabled // Disable input to prevent changes
+                  disabled
                 />
               )}
               <input
@@ -231,6 +243,7 @@ function App() {
           <button onClick={handleConnectWallet} className="connect-button">Connect Wallet</button>
         )}
       </div>
+      <Modal show={showModal} onClose={closeModal} message={modalMessage} />
     </div>
   );
 }
