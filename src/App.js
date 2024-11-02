@@ -112,7 +112,8 @@ function App() {
     setAccount(null);
     setBonus(0);
     setHasInvested(false);
-    setPreviousReferrer('');
+    setPreviousReferrer(''); 
+    setReferrer(''); // Clear the referrer when disconnecting
     console.log("Wallet disconnected.");
   };
 
@@ -143,10 +144,10 @@ function App() {
 
     let referrerAddress;
     if (hasInvested) {
-      referrerAddress = previousReferrer; // Use stored referrer for future investments
+      referrerAddress = previousReferrer; // Use the previous referrer for subsequent investments
     } else {
       referrerAddress = referrer || smartContractOwnWalletAddress; // Use form input or default on first investment
-      setPreviousReferrer(referrerAddress); // Save referrer for subsequent investments
+      setPreviousReferrer(referrerAddress); // Save referrer for future reference
       setHasInvested(true); // Mark as having invested
     }
 
@@ -179,10 +180,10 @@ function App() {
 
   return (
     <div className="App">
-       <div style={{ backgroundColor: '', padding: '20px' }}>
-            <h1>Daily Cash Community</h1>
-            <h2>"Building a Brighter Future Through Collective Giving"</h2>
-        </div>
+      <div style={{ backgroundColor: '', padding: '20px' }}>
+        <h1>Daily Polygon Community</h1>
+        <h2>"Building a Brighter Future Through Collective Giving"</h2>
+      </div>
       <div className="container">
         {account ? (
           <div className="dashboard">
@@ -193,13 +194,22 @@ function App() {
               <button onClick={handleGetBonus} className="bonus-button">Check Your Available Grant</button>
             </div>
             <form onSubmit={handleMakeInvestment} className="investment-form">
-              {!hasInvested && (
+              {/* Referrer input displayed only for first-time investors */}
+              {!hasInvested ? (
                 <input
                   type="text"
                   placeholder="Referrer Address"
                   value={referrer}
                   onChange={(e) => setReferrer(e.target.value)}
                   className="input-field"
+                />
+              ) : (
+                <input
+                  type="text"
+                  placeholder="Referrer Address"
+                  value={previousReferrer} // Display the previous referrer
+                  className="input-field"
+                  disabled // Disable input to prevent changes
                 />
               )}
               <input
