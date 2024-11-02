@@ -1,4 +1,7 @@
 {
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "@babel/eslint-parser": "^7.25.9",
     "@testing-library/jest-dom": "^6.6.3",
