@@ -1,7 +1,7 @@
 .App {
   text-align: center; /* Center-aligns text within the app */
   font-family: 'Courier New', sans-serif; /* Sets the font family */
-  background-image: url('background.png'); /* Path to background image */
+  background-image: url('https://dailypolygoncommunity.github.io/pro/static/media/background.b0fdbbea6a6df56746a4.png'); /* Path to background image */
   background-size: cover; /* Ensures the background image covers the entire element */
   background-position: center; /* Centers the background image */
   padding: 20px; /* Adds padding around the content */
