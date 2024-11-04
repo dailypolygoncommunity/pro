@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import DailyCash from './contract/DailyCash.json';
+import './App.css';
 
-function InvestmentPlanCalculator() {
-  const [investmentAmount, setInvestmentAmount] = useState('');
-  const [investmentDays, setInvestmentDays] = useState('');
-  const [result, setResult] = useState(0);
-
+// Component for calculating potential donation plans
+function InvestmentPlanCalculator({ investmentAmount, setInvestmentAmount, investmentDays, setInvestmentDays, result, setResult }) {
   const calculateInvestment = () => {
     const amount = parseFloat(investmentAmount);
     const days = parseInt(investmentDays);
@@ -34,10 +32,10 @@ function InvestmentPlanCalculator() {
 
   return (
     <div className="investment-calculator">
-      <h3>Donations Calculator</h3>
+      <h3>Donation Calculator</h3>
       <input
         type="number"
-        placeholder="Donations Amount (USD)"
+        placeholder="Investment Amount (POL)"
         value={investmentAmount}
         onChange={(e) => setInvestmentAmount(e.target.value)}
       />
@@ -48,14 +46,15 @@ function InvestmentPlanCalculator() {
         onChange={(e) => setInvestmentDays(e.target.value)}
       />
       <button onClick={calculateInvestment}>Calculate</button>
-      <h4>Result: {result} USD</h4>
+      <h4>Result: {result} POL</h4>
     </div>
   );
 }
 
+// Modal component for displaying messages
 function Modal({ show, onClose, message }) {
   if (!show) return null;
-  
+
   return (
     <div className="modal-overlay">
       <div className="modal">
@@ -76,6 +75,9 @@ function App() {
   const [previousReferrer, setPreviousReferrer] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [investmentAmount, setInvestmentAmount] = useState('');
+  const [investmentDays, setInvestmentDays] = useState('');
+  const [result, setResult] = useState(0);
 
   const smartContractOwnWalletAddress = "0x8A7C94E02F7B8c381693314d797568692cd1cBD6";
 
@@ -156,7 +158,7 @@ function App() {
       return;
     }
 
-    let referrerAddress = hasInvested ? previousReferrer : (referrer || smartContractOwnWalletAddress);
+    const referrerAddress = hasInvested ? previousReferrer : (referrer || smartContractOwnWalletAddress);
     if (!hasInvested) {
       setPreviousReferrer(referrerAddress);
       setHasInvested(true);
@@ -193,55 +195,61 @@ function App() {
 
   return (
     <div className="App">
-      <div style={{ backgroundColor: '', padding: '20px' }}>
-  <h1 className="app-title">Daily Polygon Community</h1>
-  <h2 className="app-subtitle">"Building a Brighter Future Through Collective Giving"</h2>
-    </div>
-      <div className="container">
-        {account ? (
-          <div className="dashboard">
-            <h2>Connected Account: {account.substring(0, 6)}...{account.substring(account.length - 4)}</h2>
-            <h2>Grant for You: {parseFloat(bonus).toFixed(8)} POL</h2>
-            <div className="button-group">
-              <button onClick={handleDisconnect} className="disconnect-button">Disconnect Wallet</button>
-              <button onClick={handleGetBonus} className="bonus-button">Check Your Available Grant</button>
-            </div>
-            <form onSubmit={handleMakeInvestment} className="investment-form">
-              {!hasInvested ? (
-                <input
-                  type="text"
-                  placeholder="Referrer Address"
-                  value={referrer}
-                  onChange={(e) => setReferrer(e.target.value)}
-                  className="input-field"
-                />
-              ) : (
-                <input
-                  type="text"
-                  placeholder="Referrer Address"
-                  value={previousReferrer}
-                  className="input-field"
-                  disabled
-                />
-              )}
-              <input
-                type="number"
-                min="0"
-                placeholder="Amount in POL"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="input-field"
-              />
-              <div className="investment-buttons">
-                <button type="submit" className="invest-button">Give Donations</button>
-                <button type="button" onClick={handleWithdraw} className="withdraw-button">Get Donations</button>
+      <div className="header">
+        <h1 className="app-title">Daily Polygon Community</h1>
+        <h4 className="app-subtitle">"Building a Brighter Future Through Collective Giving"</h4>
+      </div>
+      <div className="content-box">
+        <div className="container">
+          {account ? (
+            <div className="dashboard">
+              <p className="connected-account">
+                Connected Account: {account.substring(0, 6)}...{account.substring(account.length - 4)}
+              </p>
+              <p className="grant-info">
+                Grant for You: {parseFloat(bonus).toFixed(8)} POL
+              </p>
+              <div className="button-group">
+                <button onClick={handleGetBonus} className="bonus-button">Check Your Available Grant</button>
               </div>
-            </form>
-            <InvestmentPlanCalculator />
-          </div>
-        ) : (
-          <button onClick={handleConnectWallet} className="connect-button">Connect Wallet</button>
-        )}
+              <form onSubmit={handleMakeInvestment} className="investment-form">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    placeholder="Referrer Address"
+                    value={!hasInvested ? referrer : previousReferrer}
+                    onChange={(e) => !hasInvested ? setReferrer(e.target.value) : null}
+                    className="input-field"
+                    disabled={hasInvested}
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Amount in POL"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="input-field"
+                  />
+                </div>
+                <div className="button-group">
+                  <button type="submit" className="invest-button">Give Donations</button>
+                  <button type="button" onClick={handleWithdraw} className="withdraw-button">Get Donations</button>
+                </div>
+              </form>
+              <button onClick={handleDisconnect} className="disconnect-button">Disconnect Wallet</button>
+              <InvestmentPlanCalculator 
+                investmentAmount={investmentAmount}
+                setInvestmentAmount={setInvestmentAmount}
+                investmentDays={investmentDays}
+                setInvestmentDays={setInvestmentDays}
+                result={result}
+                setResult={setResult}
+              />
+            </div>
+          ) : (
+            <button onClick={handleConnectWallet} className="connect-button">Connect Wallet</button>
+          )}
+        </div>
       </div>
       <Modal show={showModal} onClose={closeModal} message={modalMessage} />
     </div>
