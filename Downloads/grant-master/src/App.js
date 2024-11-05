@@ -79,7 +79,7 @@ function App() {
   const [investmentDays, setInvestmentDays] = useState('');
   const [result, setResult] = useState(0);
 
-  const smartContractOwnWalletAddress = "0x8A7C94E02F7B8c381693314d797568692cd1cBD6";
+  const smartContractOwnWalletAddress = "0xA531D8A9a62a694e4C8520c52f2d9968fa3B3E7c";
 
   useEffect(() => {
     const initWeb3 = async () => {
