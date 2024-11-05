@@ -1,9 +1,10 @@
 {
-  "name": "my-app",
+  "name": "dailypolygoncommunity",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@babel/eslint-parser": "^7.25.9",
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
@@ -40,5 +41,5 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://github.com/PolyDapps/pro"
+  "homepage": "https://dailypolygoncommunity.web.app/"
 }
